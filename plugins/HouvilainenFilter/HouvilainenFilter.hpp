@@ -4,6 +4,7 @@
 #pragma once
 
 #include "SC_PlugIn.hpp"
+#include "FilterHandler.h"
 
 namespace HouvilainenFilter {
 
@@ -13,13 +14,14 @@ public:
     HouvilainenFilter();
 
     // Destructor
-    // ~HouvilainenFilter();
+    ~HouvilainenFilter();
 
 private:
     // Calc function
     void next(int nSamples);
 
     // Member variables
+    FilterHandler *filterHandler;
 };
 
 } // namespace HouvilainenFilter

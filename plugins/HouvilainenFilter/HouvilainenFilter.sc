@@ -1,9 +1,8 @@
 HouvilainenFilter : UGen {
-	*ar { |input, gain|
-		/* TODO */ ^this.multiNew('audio', input, gain);
+	*ar { |in, freq, res, filtertype=1|
+		^this.multiNew('audio', in, freq, res, filtertype);
 	}
 	checkInputs {
-		/* TODO */
 		^this.checkValidInputs;
 	}
 }
