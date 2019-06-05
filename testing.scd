@@ -1,13 +1,15 @@
 (
 {
-  var sig = Saw.ar(100) * 0.1;
-  sig = sig + (Saw.ar(101) * 0.1);
-  sig = sig + (Pulse.ar(50) * 0.05);
+  var freq = Lag2.ar(Demand.ar(Impulse.ar(LFNoise0.kr(0.5).range(0.1, 1)), 0, Dseq([100, 66.666, 50, 75], inf)), 0.1);
+  var sig = Saw.ar(freq) * 0.1;
+  sig = sig + (Saw.ar(freq + 1) * 0.1);
+  sig = sig + (Pulse.ar(freq / 2) * 0.05);
   //sig = PinkNoise.ar(0.6);
-  sig = HouvilainenFilter.ar(sig, K2A.ar(MouseX.kr(25, 22000, \exponential)) + SinOsc.ar(150).range(-150, 150), K2A.ar(MouseY.kr(0, 1)), 3);
+  sig = HouvilainenFilter.ar(sig, Lag2.ar(LFNoise0.ar(3.6).exprange(25, 22000), 0.05) + (SinOsc.ar(150).range(-150, 150) * LFNoise1.kr(0.5).range(0, 1)), LFNoise2.kr(LFNoise1.kr(0.5).exprange(0.1, 10)).range(0.5, 0.93), 3);
+  sig = Limiter.ar(sig, 0.2);
   sig = LeakDC.ar(sig);
-  sig = sig + AllpassC.ar(sig, 0.2, [0.17, 0.2], 10, 0.1);
-  sig = sig + AllpassC.ar(sig, 1.0, [1.0, 0.7], 10, 0.2);
+  sig = sig + AllpassC.ar(sig, 0.2777, [0.17, 0.2777], 10, 0.1);
+  sig = sig + AllpassC.ar(sig, 1.0, [0.2777 * 2, 0.27777 * 3], 10, 0.2);
   //sig = sig + SinOsc.ar(MouseX.kr(25, 22000, \exponential), 0, 0.1);
 }.play
 )

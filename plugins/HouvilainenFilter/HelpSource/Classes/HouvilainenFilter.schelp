@@ -1,0 +1,100 @@
+class:: HouvilainenFilter
+summary:: Port of filter described by Antti Houvilainen in text "Non linear digital implementation of the moog ladder filter"
+related:: Classes/RLPF, Classes/MoogFF, Classes/SVF, Classes/DFM1
+categories:: UGens>Filters
+
+description::
+
+Port of filter described by Antti Houvilainen in text "Non linear digital implementation of the moog ladder filter", implemented as the Csound moogladder opcode (https://github.com/csound) and modified as part of Tal-NoiseMaker by Patrick Kunz (https://github.com/Nexbit/tal-noisemaker).
+
+Features 4x upsampling and audio-rate cutoff modulation.
+
+
+classmethods::
+
+method::ar
+
+argument::in
+audio rate input signal
+
+argument::freq
+filter cutoff frequency in hz, this is modulatable at audio rate
+
+argument::res
+filter resonance gain, between 0 and 1
+
+argument::filtertype
+selects between the various flavors of filter:
+table::
+## 0 || Bypass
+## 1 || LP 24db
+## 2 || LP 18db
+## 3 || LP 12db
+## 4 || LP 6db
+## 5 || HP 24db
+## 6 || BP 24db
+## 7 || N 24db
+::
+
+
+examples::
+
+code::
+{ HouvilainenFilter.ar(/* TODO */) }.play
+::
+
+code::
+(
+{
+  var freq = Lag2.ar(Demand.ar(Impulse.ar(LFNoise0.kr(0.5).range(0.1, 1)), 0, Dseq([100, 66.666, 50, 75], inf)), 0.1);
+  var sig = Saw.ar(freq) * 0.1;
+  sig = sig + (Saw.ar(freq + 1) * 0.1);
+  sig = sig + (Pulse.ar(freq / 2) * 0.05);
+  sig = HouvilainenFilter.ar(sig, Lag2.ar(LFNoise0.ar(3.6).exprange(25, 22000), 0.05) + (SinOsc.ar(150).range(-150, 150) * LFNoise1.kr(0.5).range(0, 1)), LFNoise2.kr(LFNoise1.kr(0.5).exprange(0.1, 10)).range(0.5, 0.93), 3);
+  sig = Limiter.ar(sig, 0.2);
+  sig = LeakDC.ar(sig);
+  sig = sig + AllpassC.ar(sig, 0.2777, [0.17, 0.2777], 10, 0.1);
+  sig = sig + AllpassC.ar(sig, 1.0, [0.2777 * 2, 0.27777 * 3], 10, 0.2);
+}.play
+)
+::
+
+code::
+(
+SynthDef(\filterdemo, { |out, res = 0.8, gate = 1, amp = 0.1, filtrange = 10, noiseamt = 0.5, type = 1, subamt = 0.5, ampmod = 0, audiomod = 0|
+  var pan = \pan.kr(0) + SinOsc.kr(LFNoise1.kr(0.5).exprange(0.1, 1), 0, \panmod.kr(0));
+  var freq = \freq.kr(440) * LFNoise2.kr(LFNoise1.kr(0.5).exprange(0.3, 0.9)).range(0.99, 1.01);
+  var sig = Splay.ar(Saw.ar([freq, freq + 1]) + HPF.ar(PinkNoise.ar(noiseamt!2), freq), 0.4, center: pan) + Pan2.ar(Pulse.ar(freq / 2, 0.5, subamt), pan / 3);
+  var cutoff = Env.adsr(5, 7, 0.5, 5).kr(0, gate).linexp(0, 1, freq, freq * filtrange);
+  amp = Env.adsr(7, 10, 0.2, 10).kr(1, gate, levelScale: amp) * SinOsc.ar(LFNoise1.kr(0.5).range(3, 6)).range(1, 1 - ampmod);
+  sig = HouvilainenFilter.ar(sig, cutoff + (SinOsc.ar(LFNoise2.kr(LFNoise1.kr(1).range(0.5, 5)).exprange(0.001, 1000)).range(-100, 100) * audiomod), res, type) * amp;
+  Out.ar(out, sig);
+}).add;
+)
+
+(
+x = {
+  var sig = In.ar(0, 2);
+  sig = sig + LPF.ar(AllpassC.ar(sig, 0.2, [0.17, 0.2], 10, 0.2), 8000);
+  sig = sig + LPF.ar(AllpassC.ar(sig, 1.0, [1.0, 0.7], 10, 0.3), 5000);
+  ReplaceOut.ar(0, sig);
+}.play;
+
+Pbind(
+  \instrument, \filterdemo,
+  \midinote, Prand([38, 50, 57, 62, 64, 66, 68, 69, 72, 74], inf),
+  \dur, Pwhite(0.5, 8),
+  \legato, Pwhite(1.0, 5.0),
+  \res, Pwhite(0, 0.95),
+  \db, Pkey(\midinote).linlin(38, 66, -6, -12) + Pwhite(-3.0, 3.0),
+  \filtrange, Pkey(\midinote).linlin(38, 66, 15, 6) + Pwhite(-5, 5),
+  \noiseamt, Pwhite(0.0, 1.0),
+  \type, Pwhite(1, 4),
+  \pan, Pwhite(-1.0, 1.0),
+  \subamt, Pkey(\midinote).linlin(38, 74, 0.8, 0.2) + Pwhite(-0.2, 0.4),
+  \ampmod, Pwhite(0.0, 1).linexp(0, 1, 0.001, 1) * Pkey(\midinote).linlin(38, 66, 0.1, 1),
+  \audiomod, (Pbrown(0.0, 1.0, 0.5) + Pwhite(-0.2, 0.2)).linexp(0, 1, 0.01, 2).trace,
+  \panmod, Pwhite(0.0, 1.0) * Pkey(\midinote).linexp(38, 74, 0.1, 1)
+).play
+)
+::

@@ -18,10 +18,12 @@ public:
 
 private:
     // Calc function
-    void next(int nSamples);
+    void next_a(int nSamples);
+    void next_k(int nSamples);
 
     // Member variables
     FilterHandler *filterHandler;
+    float filterType;
 };
 
 } // namespace HouvilainenFilter
