@@ -74,7 +74,7 @@ SynthDef(\filterdemo, { |out, res = 0.8, gate = 1, amp = 0.1, filtrange = 10, no
 
 (
 x = {
-  var sig = In.ar(0, 2);
+  var sig = In.ar(0, 2) * 0.1;
   sig = sig + LPF.ar(AllpassC.ar(sig, 0.2, [0.17, 0.2], 10, 0.2), 8000);
   sig = sig + LPF.ar(AllpassC.ar(sig, 1.0, [1.0, 0.7], 10, 0.3), 5000);
   ReplaceOut.ar(0, sig);
