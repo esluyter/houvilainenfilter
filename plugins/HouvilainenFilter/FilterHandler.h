@@ -119,9 +119,9 @@ public:
 		{
 		case 1:
 			filterLp24db->process(&upsampledValues[0], cutoff, resonance, true);
-			//filterLp24db->process(&upsampledValues[1], cutoff, resonance, false);
-			//filterLp24db->process(&upsampledValues[2], cutoff, resonance, false);
-			//filterLp24db->process(&upsampledValues[3], cutoff, resonance, false);
+			filterLp24db->process(&upsampledValues[1], cutoff, resonance, false);
+			filterLp24db->process(&upsampledValues[2], cutoff, resonance, false);
+			filterLp24db->process(&upsampledValues[3], cutoff, resonance, false);
 			break;
 		case 2:
 			filterLp18db->process(&upsampledValues[0], cutoff, resonance, true);

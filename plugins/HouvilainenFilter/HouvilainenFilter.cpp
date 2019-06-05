@@ -32,8 +32,7 @@ void HouvilainenFilter::next(int nSamples)
     float * outbuf = out(0);
 
     for (int i = 0; i < nSamples; ++i) {
-        outbuf[i] = input[i];
-        Print("Sample: %f\n", filterHandler->process(input[i], cutoff[i], resonance[i]));
+        outbuf[i] = filterHandler->process(input[i], cutoff[i], resonance[i]);
     }
 }
 

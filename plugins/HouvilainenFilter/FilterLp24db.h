@@ -95,14 +95,16 @@ public:
 		// Cutoff from 0 (0Hz) to 1 (nyquist)
 		if (calcCeff && cutoffIn != cutoffInOld)
 		{
-			cutoffInOld = cutoffIn;
+			cutoffInOld = cutoffIn; // 1000
+			// 114.843750
 			kfc  = cutoffIn * sampleRateFactor * 0.5f; // ~sr/2 + tanh approximation correction
 
 			// Frequency & amplitude correction
-			kfcr = 1.8730f*(kfc*kfc*kfc) + 0.4955f*(kfc*kfc) - 0.6490f*kfc + 1.4f;
-			kacr = 1.0f + 1.8f * cutoffIn;
+			kfcr = 1.8730f*(kfc*kfc*kfc) + 0.4955f*(kfc*kfc) - 0.6490f*kfc + 1.4f; // 2843466
+			kacr = 1.0f + 1.8f * cutoffIn; // 1801
 
 			tmp = - 2.0f * pi * kfcr * kfc; // Filter Tuning
+
 			k2vg = (1.0f-(1.0f+tmp+tmp*tmp*0.5f+tmp*tmp*tmp*0.16666667f+tmp*tmp*tmp*tmp*0.0416666667f+tmp*tmp*tmp*tmp*tmp*0.00833333333f));
 		}
 
@@ -140,8 +142,7 @@ public:
 			amf *= 0.99f;
 		}
 
-        //*input = amf * (resonanceCorrPost + cutoffIn * resonance * 3.5f);
-		*input = k2vg;
+        *input = amf * (resonanceCorrPost + cutoffIn * resonance * 3.5f);
 	}
 
 	inline float tanhApp(const float x)
