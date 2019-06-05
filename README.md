@@ -27,7 +27,7 @@ Then, depending on your toolchain:
     make install
 
     # macOS + Xcode
-    cmake .. -GXcode -DSC_PATHE=/path/to/supercollider
+    cmake .. -GXcode -DSC_PATH=/path/to/supercollider
     cmake --build . --config Release
 
     # Windows + VS 2017
