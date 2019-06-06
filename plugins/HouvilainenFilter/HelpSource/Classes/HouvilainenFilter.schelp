@@ -39,10 +39,45 @@ table::
 
 examples::
 
+Basic example of all filter types on various sources:
 code::
-{ HouvilainenFilter.ar(/* TODO */) }.play
+(
+Ndef(\src, { PinkNoise.ar(0.1 ! 2) });
+Ndef(\type, 1);
+Ndef(\freq, { MouseX.kr(100, 12000, \exponential) });
+Ndef(\res, { MouseY.kr });
+Ndef(\filtered, {
+  Limiter.ar(
+    HouvilainenFilter.ar(Ndef.ar(\src), Ndef.kr(\freq), Ndef.kr(\res), Ndef.kr(\type)),
+    0.2
+  );
+}).play;
+)
+
+Ndef(\type, 1); // LP 24 db
+Ndef(\type, 2); // LP 18 db
+Ndef(\type, 3); // LP 12 db
+Ndef(\type, 4); // LP 6 db
+Ndef(\type, 5); // HP 24 db
+Ndef(\type, 6); // BP 24 db
+Ndef(\type, 7); // N 24 db
+
+Ndef(\src, { PinkNoise.ar(0.1 ! 2) });
+Ndef(\src, { Saw.ar(75, 0.1) ! 2 });
+Ndef(\src, { Saw.ar(303, 0.1) ! 2});
+Ndef(\src, { Saw.ar(SinOsc.ar(0.1).range(5, 15), 0.1) ! 2 });
+Ndef(\src, { Pulse.ar(75, SinOsc.ar(1).range(0.1, 0.9), 0.1) ! 2 });
+
+b.free; b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
+b.free; b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+Ndef(\src, { HPF.ar(PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1), 400) ! 2});
+
+Ndef(\filtered).stop;
+Ndef.all.do(_.free); b.free;
 ::
 
+
+An example using control- and audio-rate cutoff modulation on a monophonic synth bass:
 code::
 (
 {
@@ -59,8 +94,10 @@ code::
 )
 ::
 
+
+A polyphonic example where each note has different filter parameters, also including audio-rate cutoff modulation:
 code::
-(
+( // first add synthdef
 SynthDef(\filterdemo, { |out, res = 0.8, gate = 1, amp = 0.1, filtrange = 10, noiseamt = 0.5, type = 1, subamt = 0.5, ampmod = 0, audiomod = 0|
   var pan = \pan.kr(0) + SinOsc.kr(LFNoise1.kr(0.5).exprange(0.1, 1), 0, \panmod.kr(0));
   var freq = \freq.kr(440) * LFNoise2.kr(LFNoise1.kr(0.5).exprange(0.3, 0.9)).range(0.99, 1.01);
@@ -72,7 +109,7 @@ SynthDef(\filterdemo, { |out, res = 0.8, gate = 1, amp = 0.1, filtrange = 10, no
 }).add;
 )
 
-(
+( // then start pattern
 x = {
   var sig = In.ar(0, 2) * 0.1;
   sig = sig + LPF.ar(AllpassC.ar(sig, 0.2, [0.17, 0.2], 10, 0.2), 8000);
@@ -93,7 +130,7 @@ Pbind(
   \pan, Pwhite(-1.0, 1.0),
   \subamt, Pkey(\midinote).linlin(38, 74, 0.8, 0.2) + Pwhite(-0.2, 0.4),
   \ampmod, Pwhite(0.0, 1).linexp(0, 1, 0.001, 1) * Pkey(\midinote).linlin(38, 66, 0.1, 1),
-  \audiomod, (Pbrown(0.0, 1.0, 0.5) + Pwhite(-0.2, 0.2)).linexp(0, 1, 0.01, 2).trace,
+  \audiomod, (Pbrown(0.0, 1.0, 0.5) + Pwhite(-0.2, 0.2)).linexp(0, 1, 0.01, 2),
   \panmod, Pwhite(0.0, 1.0) * Pkey(\midinote).linexp(38, 74, 0.1, 1)
 ).play
 )
