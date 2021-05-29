@@ -161,7 +161,7 @@ public:
 			break;
 		}
 
-		return upsampledValues[0];
+		//return upsampledValues[0];
 
 		float decimated1 = decimator->Calc(upsampledValues[0], upsampledValues[1]);
 		float decimated2 = decimator->Calc(upsampledValues[2], upsampledValues[3]);
