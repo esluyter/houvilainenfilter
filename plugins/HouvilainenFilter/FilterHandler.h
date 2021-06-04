@@ -24,16 +24,15 @@
 #ifndef __FilterHandler_h_
 #define __FilterHandler_h_
 
-
 #include "Decimator.h"
-#include "InterpolatorLinear.h"
-#include "FilterLp24db.h"
-#include "FilterLp18db.h"
-#include "FilterLp12db.h"
-#include "FilterLp06db.h"
-#include "FilterHp24db.h"
 #include "FilterBp24db.h"
+#include "FilterHp24db.h"
+#include "FilterLp06db.h"
+#include "FilterLp12db.h"
+#include "FilterLp18db.h"
+#include "FilterLp24db.h"
 #include "FilterN24db.h"
+#include "Interpolatorlinear.h"
 
 class FilterHandler
 {
