@@ -64,7 +64,7 @@ set(HouvilainenFilter_sc_files
     plugins/HouvilainenFilter/HouvilainenFilter.sc
 )
 set(HouvilainenFilter_schelp_files
-    plugins/HouvilainenFilter/HouvilainenFilter.schelp
+	plugins/HouvilainenFilter/HelpSource/Classes/HouvilainenFilter.schelp
 )
 
 sc_add_server_plugin(

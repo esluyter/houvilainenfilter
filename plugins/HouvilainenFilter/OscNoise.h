@@ -1,8 +1,6 @@
 #ifndef OscNoise_H
 #define OscNoise_H
 
-#include "Math.h"
-
 /*
 	==============================================================================
 	This file is part of Tal-NoiseMaker by Patrick Kunz.
